@@ -6,7 +6,7 @@ from constants import EAGLE_POS, SPEED_MEDIUM, FIRE_RATE_ARMOR, HP_ARMOR, ARMOR_
 
 class ArmorTank(BaseTank):
     def __init__(self, x, y):
-        super().__init__(x, y, tank_type='armor')
+        super().__init__(x, y, tank_type='armor', speed=50.0)
         self.hp = HP_ARMOR
         self.hit_count = 0
         self.color = (180, 180, 200) # Base armor color
@@ -21,7 +21,9 @@ class ArmorTank(BaseTank):
         return super().take_damage(amount)
 
     def decide(self, grid, player):
-        self.update_cooldowns()
+        # Grid alignment check for smooth movement
+        if self.x != self.target_gx or self.y != self.target_gy:
+            return "wait"
         
         if self.state == "recovering":
             self.wait_timer -= 1

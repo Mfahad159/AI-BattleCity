@@ -6,9 +6,11 @@ class Grid:
     def __init__(self):
         self.generator = CSPMapGenerator()
         self.matrix = self.generator.generate(level=1)
+        self.eagle_alive = True
 
     def generate_new_map(self, level=1):
         self.matrix = self.generator.generate(level)
+        self.eagle_alive = True
 
     def get_tile(self, x, y):
         if 0 <= x < GRID_SIZE and 0 <= y < GRID_SIZE:
@@ -30,8 +32,13 @@ class Grid:
         return tile in [EMPTY, WATER, FOREST]
 
     def destroy_wall(self, x, y):
-        if self.get_tile(x, y) == BRICK:
+        tile = self.get_tile(x, y)
+        if tile == BRICK:
             self.set_tile(x, y, EMPTY)
+            return True
+        elif tile == EAGLE:
+            self.set_tile(x, y, EMPTY)
+            self.eagle_alive = False
             return True
         return False
 

@@ -33,7 +33,7 @@ ASTAR_COST = {
 }
 
 # ── FIXED POSITIONS ───────────────────────────────────────────────────────────
-EAGLE_POS        = (12, 24)
+EAGLE_POS        = (13, 25)
 PLAYER_SPAWN     = (4, 24)
 ENEMY_SPAWNS     = [(0, 0), (12, 0), (24, 0)]  # TL, TC, TR
 
@@ -48,19 +48,19 @@ SPAWN_FAIRNESS_DISTANCE = 10        # Min Manhattan distance from player
 
 # ── TANK SPEEDS (ticks per tile move) ─────────────────────────────────────────
 # Higher number = slower (moves every N ticks). 60 ticks = 1 second.
-SPEED_PLAYER = 15   # Player moves every 15 ticks (4 tiles/sec)
-SPEED_SLOW   = 30   # Basic Tank (2 tiles/sec)
-SPEED_MEDIUM = 20   # Armor Tank (3 tiles/sec)
-SPEED_FAST   = 12   # Fast Tank (5 tiles/sec)
+SPEED_PLAYER = 10   # Player moves every 10 ticks (6 tiles/sec) - FASTEST
+SPEED_SLOW   = 35   # Basic Tank (1.7 tiles/sec)
+SPEED_MEDIUM = 25   # Armor Tank (2.4 tiles/sec)
+SPEED_FAST   = 15   # Fast Tank (4 tiles/sec)
 
 # ── BULLET SPEED ──────────────────────────────────────────────────────────────
 BULLET_SPEED_MULTIPLIER = 2   # Bullets move 2x tank speed
 
 # ── FIRE RATES (ticks between shots) ──────────────────────────────────────────
 # At 60 FPS: 1s = 60 ticks, 1.5s = 90 ticks, 2s = 120 ticks, 3s = 180 ticks
-FIRE_RATE_BASIC  = 180   # 1 bullet every 3 seconds
-FIRE_RATE_FAST   = 90    # 1 bullet every 1.5 seconds
-FIRE_RATE_ARMOR  = 120   # 1 bullet every 2 seconds
+FIRE_RATE_BASIC  = 120   # 1 bullet every 2 seconds
+FIRE_RATE_FAST   = 60    # 1 bullet every 1 second
+FIRE_RATE_ARMOR  = 90    # 1 bullet every 1.5 seconds
 
 # ── TANK HP ───────────────────────────────────────────────────────────────────
 HP_BASIC  = 1

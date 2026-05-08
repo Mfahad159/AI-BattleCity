@@ -37,8 +37,9 @@ class AssetManager:
         self.sprites['eagle'] = self._create_eagle_sprite()
         
         # Create 3D wall sprites
-        self.sprites['brick_3d'] = self._create_stacked_wall(BRICK, depth=4)
-        self.sprites['steel_3d'] = self._create_stacked_wall(STEEL, depth=6)
+        from constants import TERRAIN_COLORS
+        self.sprites['brick_3d'] = self._create_stacked_wall(TERRAIN_COLORS[BRICK], depth=4)
+        self.sprites['steel_3d'] = self._create_stacked_wall(TERRAIN_COLORS[STEEL], depth=6)
 
     def _create_stacked_tank(self, color, sleek=False, heavy=False, boss=False):
         size = 32 if boss else 28

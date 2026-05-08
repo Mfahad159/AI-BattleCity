@@ -48,6 +48,16 @@ class Game:
         self.total_enemies = 20
         self.enemies_spawned = 0
         self.enemies_destroyed = 0
+        self.last_tick = pygame.time.get_ticks()
+        sounds.play_bg()
+        sounds.play('level_start')
+        
+        self.game_over = False
+        self.game_over_timer = 0
+        
+        # Level Transition state
+        self.transition_timer = 4.0 # 4 seconds for intro
+        self.showing_transition = True
         
     def handle_event(self, event):
         self.window_controls.handle_event(event)
@@ -58,35 +68,57 @@ class Game:
                 self.overlay.toggle()
 
     def update(self):
-        if not self.player.active:
+        # Delta time calculation (seconds)
+        now = pygame.time.get_ticks()
+        dt = (now - self.last_tick) / 1000.0
+        self.last_tick = now
+        if dt > 0.1: dt = 0.016 # Prevent jumping on lag
+
+        if self.showing_transition:
+            self.transition_timer -= dt
+            if self.transition_timer <= 0:
+                self.showing_transition = False
             return
 
+        if self.game_over:
+            self.game_over_timer += dt
+            if self.game_over_timer > 5.0: # 5 seconds of game over screen
+                self.running = False
+            return
+            
+        if not self.player.active:
+            # Respawn logic already handled below
+            pass
+            
         # 1. INPUT
         keys = pygame.key.get_pressed()
-        moved, shot = self.player.handle_input(keys, self.grid)
-        if moved:
-            sounds.play('move')
-        if shot:
+        moved, shot = self.player.handle_input(keys, self.grid, dt)
+        if shot and self.player.shoot():
             sounds.play('shoot')
+            new_bullet = Bullet(self.player.x, self.player.y, self.player.direction, self.player, CYAN)
+            self.bullets.append(new_bullet)
         
         # 2. AGENT DECISIONS (Enemies)
         for enemy in self.enemies:
             action = enemy.decide(self.grid, self.player)
-            if action == "shoot":
+            if action == "shoot" and enemy.shoot():
                 sounds.play('shoot')
-                new_bullet = Bullet(enemy.x, enemy.y, enemy.direction, 'enemy', enemy.color)
+                new_bullet = Bullet(enemy.x, enemy.y, enemy.direction, enemy, enemy.color)
                 self.bullets.append(new_bullet)
+            
+            # Smooth enemy movement
+            edx, edy = enemy.direction
+            enemy.move_smooth(edx, edy, dt, self.grid)
 
         # 3. MOVE & 4. SHOOT
-        self.player.update_cooldowns()
-        if shot:
-            new_bullet = Bullet(self.player.x, self.player.y, self.player.direction, 'player', CYAN)
-            self.bullets.append(new_bullet)
+        self.player.update_cooldowns(dt)
+        for enemy in self.enemies:
+            enemy.update_cooldowns(dt)
             
         # 5. BULLET UPDATE
         all_tanks = [self.player] + self.enemies
         for bullet in self.bullets:
-            bullet.update(self.grid, all_tanks)
+            bullet.update(self.grid, all_tanks, dt)
             
             # Create trail
             if random.random() < 0.3:
@@ -130,10 +162,24 @@ class Game:
             if self.lives > 0:
                 self.player = PlayerTank()
             else:
-                self.running = False
+                self.game_over = True
+                sounds.play('lose')
+                # Stop BG music
+                if 'bg_music' in sounds.sounds:
+                    sounds.sounds['bg_music'].stop()
+
+        if not self.grid.eagle_alive:
+            self.game_over = True
+            sounds.play('lose')
+            if 'bg_music' in sounds.sounds:
+                sounds.sounds['bg_music'].stop()
 
     def advance_level(self):
         self.level += 1
+        self.showing_transition = True
+        self.transition_timer = 4.0
+        sounds.play('level_start')
+        
         self.enemies_destroyed = 0
         self.enemies_spawned = 0
         self.bullets = []
@@ -149,6 +195,14 @@ class Game:
             self.enemies = []
 
     def render(self):
+        # Update surface if screen resized
+        curr_w, curr_h = self.screen.get_size()
+        if self.game_surface.get_width() != curr_w or self.game_surface.get_height() != curr_h - TITLE_BAR_HEIGHT:
+            self.game_surface = pygame.Surface((curr_w, curr_h - TITLE_BAR_HEIGHT))
+            self.crt_surface = pygame.Surface((curr_w, curr_h - TITLE_BAR_HEIGHT), pygame.SRCALPHA)
+            for y in range(0, curr_h, 4):
+                pygame.draw.line(self.crt_surface, (0, 0, 0, 40), (0, y), (curr_w, y))
+
         self.game_surface.fill(BG_PRIMARY)
         self.grid.render(self.game_surface)
         
@@ -166,8 +220,9 @@ class Game:
         self.effects.render(self.game_surface)
         self.overlay.render(self.game_surface, self)
 
-        # Draw sidebar
-        hud_rect = pygame.Rect(WINDOW_WIDTH - 160, 0, 160, WINDOW_HEIGHT)
+        # Draw sidebar (fixed 160px from the right edge)
+        sw, sh = self.game_surface.get_size()
+        hud_rect = pygame.Rect(sw - 160, 0, 160, sh)
         pygame.draw.rect(self.game_surface, BG_SECONDARY, hud_rect)
         self.hud.render(self.game_surface, self.level, self.lives, self.score, self.total_enemies - self.enemies_destroyed)
         
@@ -178,3 +233,48 @@ class Game:
         self.screen.fill(BG_PRIMARY)
         self.window_controls.render(self.screen)
         self.screen.blit(self.game_surface, (0, TITLE_BAR_HEIGHT))
+
+        # Game Over Overlay
+        if self.game_over:
+            overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 180))
+            
+            font = pygame.font.SysFont('Arial', 64, bold=True)
+            # Pulsing effect
+            pulse = math.sin(self.game_over_timer * 5) * 10
+            text = font.render("YOU LOSE", True, (255, 50, 50))
+            text_rect = text.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + pulse))
+            
+            overlay.blit(text, text_rect)
+            self.screen.blit(overlay, (0, 0))
+
+        # Level Transition Overlay
+        if self.showing_transition:
+            overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+            # Dark fade based on timer
+            alpha = min(255, int(self.transition_timer * 100)) if self.transition_timer < 1.0 else 220
+            overlay.fill((0, 0, 0, alpha))
+            
+            font_title = pygame.font.SysFont('Arial', 80, bold=True)
+            font_info = pygame.font.SysFont('Arial', 32)
+            
+            # Title
+            title_str = f"LEVEL {self.level}" if self.level < 3 else "BOSS BATTLE"
+            title = font_title.render(title_str, True, (255, 215, 0)) # Gold
+            title_rect = title.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 60))
+            overlay.blit(title, title_rect)
+            
+            # Dynamic Instructions
+            instructions = [
+                f"LIVES: {self.lives}",
+                f"ENEMIES: {self.total_enemies}"
+            ]
+            if self.level == 3:
+                instructions = ["OBJECTIVE: DESTROY THE BOSS", "CAUTION: SHIELDS ENABLED"]
+            
+            for i, line in enumerate(instructions):
+                text = font_info.render(line, True, (200, 200, 200))
+                rect = text.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 20 + i*40))
+                overlay.blit(text, rect)
+            
+            self.screen.blit(overlay, (0, 0))

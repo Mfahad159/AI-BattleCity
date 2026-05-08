@@ -5,7 +5,7 @@ from constants import AMBER, EAGLE_POS, SPEED_SLOW, FIRE_RATE_BASIC, BFS_REPLAN_
 
 class BasicTank(BaseTank):
     def __init__(self, x, y):
-        super().__init__(x, y, tank_type='basic')
+        super().__init__(x, y, tank_type='basic', speed=60.0)
         self.color = AMBER
         self.speed = SPEED_SLOW
         self.fire_rate = FIRE_RATE_BASIC
@@ -13,7 +13,10 @@ class BasicTank(BaseTank):
         self.replan_timer = 0
 
     def decide(self, grid, player):
-        self.update_cooldowns()
+        # 0. WAIT: Only decide if we've reached our previous target tile
+        if self.x != self.target_gx or self.y != self.target_gy:
+            return "wait"
+
         if self.replan_timer > 0:
             self.replan_timer -= 1
 

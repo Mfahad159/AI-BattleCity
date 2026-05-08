@@ -15,9 +15,15 @@ class WindowControls:
         self.drag_offset = (0, 0)
 
     def render(self, surface):
+        sw = surface.get_width()
+        self.rect.width = sw
+        self.close_rect.x = sw - 30
+        self.max_rect.x = sw - 60
+        self.min_rect.x = sw - 90
+        
         # Draw title bar background
         pygame.draw.rect(surface, BG_SECONDARY, self.rect)
-        pygame.draw.line(surface, CYAN, (0, self.height - 1), (WINDOW_WIDTH, self.height - 1), 1)
+        pygame.draw.line(surface, CYAN, (0, self.height - 1), (sw, self.height - 1), 1)
         
         # Draw buttons with neon style
         # Close (X)

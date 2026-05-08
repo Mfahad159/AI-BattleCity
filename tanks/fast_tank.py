@@ -4,13 +4,15 @@ from constants import MINT, EAGLE_POS, SPEED_FAST, FIRE_RATE_FAST
 
 class FastTank(BaseTank):
     def __init__(self, x, y):
-        super().__init__(x, y, tank_type='fast')
+        super().__init__(x, y, tank_type='fast', speed=90.0)
         self.color = MINT
         self.speed = SPEED_FAST
         self.fire_rate = FIRE_RATE_FAST
 
     def decide(self, grid, player):
-        self.update_cooldowns()
+        # Grid alignment check for smooth movement
+        if self.x != self.target_gx or self.y != self.target_gy:
+            return "wait"
         
         # Fast Tank ONLY cares about Eagle
         move_dir = greedy_step(grid.matrix, (self.x, self.y), EAGLE_POS)

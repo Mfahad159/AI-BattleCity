@@ -6,7 +6,7 @@ from core.assets import assets
 
 class BossTank(BaseTank):
     def __init__(self, x, y):
-        super().__init__(x, y, tank_type='boss')
+        super().__init__(x, y, tank_type='boss', speed=40.0)
         self.hp = HP_BOSS
         self.max_hp = HP_BOSS
         self.color = PURPLE
@@ -18,13 +18,18 @@ class BossTank(BaseTank):
             low, high = config['hp_range']
             if low <= self.hp <= high:
                 self.phase = p
-                self.speed = config['speed']
+                ticks = config['speed']
+                # Pixels per second calculation: (60 / ticks) * 32
+                self.base_speed = (60.0 / ticks) * 32.0
                 self.fire_rate = config['fire_rate']
                 break
 
     def decide(self, grid, player):
-        self.update_cooldowns()
         self.update_phase()
+        
+        # Grid alignment check for smooth movement
+        if self.x != self.target_gx or self.y != self.target_gy:
+            return "wait"
         
         # Build current state for minimax
         state = {

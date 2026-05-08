@@ -1,8 +1,8 @@
 # =============================================================================
-# BATTLE CITY (TANK 1990) — AL2002 AI LAB PROJECT | SPRING 2026
+# BATTLE CITY (TANK 1990) 
 # =============================================================================
 # TECH STACK:  Python 3.11+ | Pygame 2.x
-# INSTALL:     pip install pygame
+# INSTALL:     pip install pygame numpy 
 # RUN:         python main.py
 # =============================================================================
 #

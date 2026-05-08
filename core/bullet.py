@@ -2,55 +2,66 @@ import pygame
 from constants import TILE_SIZE, BULLET_SPEED_MULTIPLIER, GRID_SIZE
 
 class Bullet:
-    def __init__(self, x, y, direction, owner_type, color):
-        self.x = x  # Grid float coordinate for smoother movement if needed, but Spec says grid aligned.
-        # Actually Spec says "advance one tile".
+    def __init__(self, x, y, direction, owner, color):
+        # Initial grid position (centered in tile)
         self.grid_x = x
         self.grid_y = y
+        self.pos_x = float(x * TILE_SIZE + TILE_SIZE // 2)
+        self.pos_y = float(y * TILE_SIZE + TILE_SIZE // 2)
+        
         self.dx, self.dy = direction
-        self.owner_type = owner_type # 'player' or 'enemy'
+        self.owner = owner # Reference to the tank that fired this
+        self.owner_type = owner.tank_type if hasattr(owner, 'tank_type') else 'player'
         self.color = color
         self.active = True
         
-        # Speed: bullets move twice as fast as tanks.
-        # If tank moves 1 tile/tick (max), bullet moves 2 tiles/tick?
-        # Spec says: "Bullet speed = 2x tank movement speed".
-        # Let's assume this means it updates more frequently or moves more distance.
-        self.step_count = 2 
+        # Bullet speed (Pixels per second)
+        self.speed = 300.0 
 
-    def update(self, grid, tanks):
-        for _ in range(self.step_count):
-            self.grid_x += self.dx
-            self.grid_y += self.dy
+    def update(self, grid, tanks, dt):
+        # Move bullet based on velocity
+        self.pos_x += self.dx * self.speed * dt
+        self.pos_y += self.dy * self.speed * dt
+        
+        # Current grid position
+        self.grid_x = int(self.pos_x // TILE_SIZE)
+        self.grid_y = int(self.pos_y // TILE_SIZE)
+        
+        # Boundary check
+        if not (0 <= self.grid_x < GRID_SIZE and 0 <= self.grid_y < GRID_SIZE):
+            self.active = False
+            return
             
-            # Boundary check
-            if not (0 <= self.grid_x < GRID_SIZE and 0 <= self.grid_y < GRID_SIZE):
-                self.active = False
-                return
+        # Collision with walls
+        tile = grid.get_tile(self.grid_x, self.grid_y)
+        if tile == 1: # BRICK
+            grid.destroy_wall(self.grid_x, self.grid_y)
+            self.active = False
+            return
+        elif tile == 2: # STEEL
+            self.active = False
+            return
+        elif tile == 5: # EAGLE
+            grid.destroy_wall(self.grid_x, self.grid_y)
+            self.active = False
+            return
+            
+        # Collision with tanks
+        for tank in tanks:
+            if tank.active and tank != self.owner:
+                # Friendly fire off: Enemies don't hit each other, Player doesn't hit self
+                if self.owner_type != 'player' and tank.tank_type != 'player':
+                    continue
                 
-            # Collision with walls
-            tile = grid.get_tile(self.grid_x, self.grid_y)
-            if tile == 1: # BRICK
-                grid.destroy_wall(self.grid_x, self.grid_y)
-                self.active = False
-                return
-            elif tile == 2: # STEEL
-                self.active = False
-                return
-            elif tile == 5: # EAGLE
-                # Game Over logic handled in Game class, but mark bullet inactive
-                self.active = False
-                return
-                
-            # Collision with tanks
-            for tank in tanks:
-                if tank.active and tank.x == self.grid_x and tank.y == self.grid_y:
-                    # Don't hit self
-                    # (Need to check if owner is player/enemy and don't hit same type maybe? 
-                    # Actually Spec says "bullet hits a tank... takes 1 hit of damage")
+                # Check pixel distance for better feel
+                dist = ((self.pos_x - tank.pos_x)**2 + (self.pos_y - tank.pos_y)**2)**0.5
+                if dist < 12: # Bullet radius + Tank radius
                     tank.take_damage(1)
                     self.active = False
                     return
+        
+        # Destroy bullet if it hits another bullet
+        # (Optional, but helps with clarity)
 
     def render(self, surface):
         px = self.grid_x * TILE_SIZE + TILE_SIZE // 2
