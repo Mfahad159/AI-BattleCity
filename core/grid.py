@@ -1,12 +1,14 @@
 import pygame
 from constants import GRID_SIZE, TILE_SIZE, TERRAIN_COLORS, EMPTY, BRICK, STEEL, WATER, FOREST, EAGLE
+from modules.csp_map_gen import CSPMapGenerator
 
 class Grid:
     def __init__(self):
-        # Initialize 26x26 grid with EMPTY tiles
-        self.matrix = [[EMPTY for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
-        # Default Eagle position
-        self.matrix[24][12] = EAGLE
+        self.generator = CSPMapGenerator()
+        self.matrix = self.generator.generate(level=1)
+
+    def generate_new_map(self, level=1):
+        self.matrix = self.generator.generate(level)
 
     def get_tile(self, x, y):
         if 0 <= x < GRID_SIZE and 0 <= y < GRID_SIZE:

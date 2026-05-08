@@ -122,7 +122,7 @@ from constants import FPS, WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+    screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.NOFRAME)
     pygame.display.set_caption(WINDOW_TITLE)
     clock = pygame.time.Clock()
 
