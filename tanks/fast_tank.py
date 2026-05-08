@@ -4,7 +4,7 @@ from constants import MINT, EAGLE_POS, SPEED_FAST, FIRE_RATE_FAST
 
 class FastTank(BaseTank):
     def __init__(self, x, y):
-        super().__init__(x, y)
+        super().__init__(x, y, tank_type='fast')
         self.color = MINT
         self.speed = SPEED_FAST
         self.fire_rate = FIRE_RATE_FAST

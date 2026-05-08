@@ -68,7 +68,12 @@ class Game:
             if bullet.grid_x == 12 and bullet.grid_y == 24: # Eagle Pos
                 self.running = False # Game Over
             
-        # 7. STATE UPDATE
+        # 7. ANIMATIONS (Smooth movement)
+        self.player.update_animation()
+        for enemy in self.enemies:
+            enemy.update_animation()
+
+        # 8. STATE UPDATE
         self.bullets = [b for b in self.bullets if b.active]
         
         for e in self.enemies:
@@ -80,6 +85,10 @@ class Game:
         # 8. SPAWN CHECK
         self.spawner.update(self)
         
+        # 9. LEVEL TRANSITION
+        if self.enemies_destroyed >= self.total_enemies and not self.enemies:
+            self.advance_level()
+
         # 10. WIN/LOSE CHECK
         if not self.player.active:
             self.lives -= 1
@@ -87,6 +96,24 @@ class Game:
                 self.player = PlayerTank()
             else:
                 self.running = False
+
+    def advance_level(self):
+        self.level += 1
+        self.enemies_destroyed = 0
+        self.enemies_spawned = 0
+        self.bullets = []
+        self.grid.generate_new_map(self.level)
+        self.player = PlayerTank()
+        
+        if self.level == 3:
+            # Special Boss Level
+            self.total_enemies = 1
+            from tanks.boss_tank import BossTank
+            # Spawn boss in the center top
+            self.enemies = [BossTank(12, 1)]
+        else:
+            self.total_enemies = 20
+            self.enemies = []
 
     def render(self):
         # Render Game to its own surface

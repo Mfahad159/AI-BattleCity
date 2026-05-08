@@ -1,16 +1,13 @@
 import pygame
 from tanks.base_tank import BaseTank
-from constants import PLAYER_HP, CYAN, PLAYER_SPAWN
+from constants import PLAYER_HP, CYAN, PLAYER_SPAWN, SPEED_PLAYER
 
 class PlayerTank(BaseTank):
     def __init__(self):
         x, y = PLAYER_SPAWN
-        super().__init__(x, y)
+        super().__init__(x, y, tank_type='player')
         self.hp = PLAYER_HP
-        self.speed = 1 # Player moves every frame if key held?
-        # Actually Spec says "one tile per tick". But player movement usually feels better if it has some rhythm.
-        # Let's set speed to 2 (moves every 2 ticks) to match Fast tank or similar.
-        self.speed = 2 
+        self.speed = SPEED_PLAYER
         self.fire_rate = 30 # Faster than enemies
         self.color = CYAN
 

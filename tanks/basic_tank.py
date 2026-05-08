@@ -5,7 +5,7 @@ from constants import AMBER, EAGLE_POS, SPEED_SLOW, FIRE_RATE_BASIC, BFS_REPLAN_
 
 class BasicTank(BaseTank):
     def __init__(self, x, y):
-        super().__init__(x, y)
+        super().__init__(x, y, tank_type='basic')
         self.color = AMBER
         self.speed = SPEED_SLOW
         self.fire_rate = FIRE_RATE_BASIC

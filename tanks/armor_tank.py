@@ -2,14 +2,14 @@ import pygame
 from tanks.base_tank import BaseTank
 from ai.astar import astar
 from ai.bfs import bfs
-from constants import GRAY, EAGLE_POS, SPEED_MEDIUM, FIRE_RATE_ARMOR, HP_ARMOR, ARMOR_RETREAT_WAIT_TICKS, STEEL, EMPTY
+from constants import EAGLE_POS, SPEED_MEDIUM, FIRE_RATE_ARMOR, HP_ARMOR, ARMOR_RETREAT_WAIT_TICKS, EMPTY
 
 class ArmorTank(BaseTank):
     def __init__(self, x, y):
-        super().__init__(x, y)
+        super().__init__(x, y, tank_type='armor')
         self.hp = HP_ARMOR
         self.hit_count = 0
-        self.color = GRAY
+        self.color = (180, 180, 200) # Base armor color
         self.speed = SPEED_MEDIUM
         self.fire_rate = FIRE_RATE_ARMOR
         self.path = []
@@ -71,6 +71,6 @@ class ArmorTank(BaseTank):
 
     def render(self, surface):
         # Color changes based on hit_count as per design.md
-        colors = [GRAY, (160, 100, 80), (200, 60, 60), (255, 55, 55)]
+        colors = [(180, 180, 200), (160, 100, 80), (200, 60, 60), (255, 55, 55)]
         current_color = colors[min(self.hit_count, 3)]
         super().render(surface, current_color)

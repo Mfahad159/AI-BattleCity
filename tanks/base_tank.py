@@ -1,21 +1,35 @@
-import pygame
 from constants import TILE_SIZE
+from core.assets import assets
 
 class BaseTank:
-    def __init__(self, x, y, direction=(0, -1)):
+    def __init__(self, x, y, direction=(0, -1), tank_type='basic'):
         self.x = x  # Grid coordinate
         self.y = y  # Grid coordinate
         self.direction = direction  # (dx, dy)
+        self.tank_type = tank_type
+        
+        # Continuous rendering coordinates
+        self.render_x = x * TILE_SIZE + TILE_SIZE // 2
+        self.render_y = y * TILE_SIZE + TILE_SIZE // 2
+        self.lerp_speed = 0.2 # Accelerator feeling
         
         # Attributes to be overridden by subclasses
         self.hp = 1
-        self.speed = 4  # Ticks per move
+        self.speed = 30  # Ticks per move
         self.fire_rate = 60  # Ticks between shots
         
         # Internal state
         self.move_cooldown = 0
         self.fire_cooldown = 0
         self.active = True
+
+    def update_animation(self):
+        target_x = self.x * TILE_SIZE + TILE_SIZE // 2
+        target_y = self.y * TILE_SIZE + TILE_SIZE // 2
+        
+        # Smoothly interpolate render position towards target
+        self.render_x += (target_x - self.render_x) * self.lerp_speed
+        self.render_y += (target_y - self.render_y) * self.lerp_speed
 
     def move(self, dx, dy, grid):
         self.direction = (dx, dy)
@@ -65,21 +79,7 @@ class BaseTank:
         if not self.active:
             return
             
-        px, py = self.get_pixel_pos()
-        # Draw body (20x20 centered in 24x24 tile)
-        rect = pygame.Rect(0, 0, 20, 20)
-        rect.center = (px, py)
-        pygame.draw.rect(surface, color, rect)
-        
-        # Draw turret (small rectangle indicating direction)
-        turret_w = 4
-        turret_h = 10
-        tx = px + self.direction[0] * 8
-        ty = py + self.direction[1] * 8
-        
-        turret_rect = pygame.Rect(0, 0, turret_w, turret_h)
-        if self.direction[0] != 0: # Horizontal
-            turret_rect = pygame.Rect(0, 0, turret_h, turret_w)
-            
-        turret_rect.center = (tx, ty)
-        pygame.draw.rect(surface, color, turret_rect)
+        sprite = assets.get_sprite(self.tank_type, self.direction)
+        if sprite:
+            rect = sprite.get_rect(center=(self.render_x, self.render_y))
+            surface.blit(sprite, rect)

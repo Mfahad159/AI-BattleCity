@@ -44,8 +44,14 @@ class Grid:
                 # Basic rectangle rendering for now
                 rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
                 
-                # Don't draw EMPTY as it's the BG color anyway
                 if tile_type != EMPTY:
+                    if tile_type == EAGLE:
+                        from core.assets import assets
+                        sprite = assets.get_sprite('eagle')
+                        if sprite:
+                            surface.blit(sprite, rect)
+                        continue
+                        
                     pygame.draw.rect(surface, color, rect)
                     
                     # Add subtle detail to tiles based on design.md

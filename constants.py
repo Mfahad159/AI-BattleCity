@@ -47,10 +47,11 @@ TOTAL_ENEMY_POOL        = 20        # Per level
 SPAWN_FAIRNESS_DISTANCE = 10        # Min Manhattan distance from player
 
 # ── TANK SPEEDS (ticks per tile move) ─────────────────────────────────────────
-# Lower number = faster (moves every N ticks)
-SPEED_SLOW   = 4   # Basic Tank
-SPEED_MEDIUM = 3   # Armor Tank
-SPEED_FAST   = 2   # Fast Tank
+# Higher number = slower (moves every N ticks). 60 ticks = 1 second.
+SPEED_PLAYER = 15   # Player moves every 15 ticks (4 tiles/sec)
+SPEED_SLOW   = 30   # Basic Tank (2 tiles/sec)
+SPEED_MEDIUM = 20   # Armor Tank (3 tiles/sec)
+SPEED_FAST   = 12   # Fast Tank (5 tiles/sec)
 
 # ── BULLET SPEED ──────────────────────────────────────────────────────────────
 BULLET_SPEED_MULTIPLIER = 2   # Bullets move 2x tank speed
