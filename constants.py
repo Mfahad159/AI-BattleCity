@@ -8,7 +8,7 @@
 GRID_SIZE      = 26          # 26x26 tile grid
 TILE_SIZE      = 24          # pixels per tile (adjust for screen fit)
 TITLE_BAR_HEIGHT = 30
-WINDOW_WIDTH   = GRID_SIZE * TILE_SIZE + 160   # +160 for HUD sidebar
+WINDOW_WIDTH   = GRID_SIZE * TILE_SIZE + 240   # +240 for detailed HUD sidebar
 WINDOW_HEIGHT  = GRID_SIZE * TILE_SIZE + TITLE_BAR_HEIGHT
 WINDOW_TITLE   = "Battle City"
 FPS            = 60          # 1 game tick = 1 frame

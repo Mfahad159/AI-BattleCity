@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 from core.grid import Grid
 from core.bullet import Bullet
 from tanks.player_tank import PlayerTank
@@ -7,7 +8,7 @@ from ui.hud import HUD
 from ui.window_controls import WindowControls
 from constants import (
     BG_PRIMARY, BG_SECONDARY, WINDOW_WIDTH, WINDOW_HEIGHT, 
-    CYAN, TITLE_BAR_HEIGHT, TILE_SIZE, AMBER
+    CYAN, TITLE_BAR_HEIGHT, TILE_SIZE, AMBER, PLAYER_LIVES, GRID_SIZE
 )
 
 from core.spawner import Spawner
@@ -21,7 +22,8 @@ class Game:
     def __init__(self, screen):
         self.screen = screen
         self.window_controls = WindowControls()
-        self.game_surface = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT - TITLE_BAR_HEIGHT))
+        grid_w = GRID_SIZE * TILE_SIZE
+        self.game_surface = pygame.Surface((grid_w, WINDOW_HEIGHT - TITLE_BAR_HEIGHT))
         
         self.effects = EffectManager()
         self.overlay = AIOverlay()
@@ -66,6 +68,34 @@ class Game:
                 self.running = False
             if event.key == pygame.K_F1:
                 self.overlay.toggle()
+        
+        if self.game_over and event.type == pygame.MOUSEBUTTONDOWN:
+            mx, my = pygame.mouse.get_pos()
+            # Rects for buttons
+            if pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 50).collidepoint(mx, my):
+                self.reset()
+            elif pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 120, 200, 50).collidepoint(mx, my):
+                import sys
+                pygame.quit()
+                sys.exit()
+
+    def reset(self):
+        # Full game reset
+        self.level = 1
+        self.score = 0
+        self.lives = PLAYER_LIVES
+        self.grid.generate_new_map(level=1)
+        self.player = PlayerTank()
+        self.enemies = []
+        self.enemies_spawned = 0
+        self.enemies_destroyed = 0
+        self.bullets = []
+        self.game_over = False
+        self.game_over_timer = 0
+        self.showing_transition = True
+        self.transition_timer = 4.0
+        sounds.play_bg()
+        sounds.play('level_start')
 
     def update(self):
         # Delta time calculation (seconds)
@@ -82,8 +112,6 @@ class Game:
 
         if self.game_over:
             self.game_over_timer += dt
-            if self.game_over_timer > 5.0: # 5 seconds of game over screen
-                self.running = False
             return
             
         if not self.player.active:
@@ -220,19 +248,31 @@ class Game:
         self.effects.render(self.game_surface)
         self.overlay.render(self.game_surface, self)
 
-        # Draw sidebar (fixed 160px from the right edge)
-        sw, sh = self.game_surface.get_size()
-        hud_rect = pygame.Rect(sw - 160, 0, 160, sh)
-        pygame.draw.rect(self.game_surface, BG_SECONDARY, hud_rect)
-        self.hud.render(self.game_surface, self.level, self.lives, self.score, self.total_enemies - self.enemies_destroyed)
-        
         # Apply CRT effect
         self.game_surface.blit(self.crt_surface, (0, 0))
 
         # Composite to main screen
         self.screen.fill(BG_PRIMARY)
         self.window_controls.render(self.screen)
+        
+        # Draw game area background with rounded corners
+        grid_w = GRID_SIZE * TILE_SIZE
+        game_rect = pygame.Rect(0, TITLE_BAR_HEIGHT, grid_w, WINDOW_HEIGHT - TITLE_BAR_HEIGHT)
+        pygame.draw.rect(self.screen, BG_SECONDARY, game_rect, border_radius=6)
+        
+        # Blit game surface
         self.screen.blit(self.game_surface, (0, TITLE_BAR_HEIGHT))
+        
+        # Draw border outline
+        pygame.draw.rect(self.screen, (60, 70, 100), game_rect, width=2, border_radius=6)
+
+        # 2. RENDER SIDEBAR TO MAIN SCREEN
+        # Draw Sidebar Background
+        sidebar_rect = pygame.Rect(grid_w, TITLE_BAR_HEIGHT, 240, WINDOW_HEIGHT - TITLE_BAR_HEIGHT)
+        pygame.draw.rect(self.screen, BG_SECONDARY, sidebar_rect)
+        
+        # Render HUD elements
+        self.hud.render(self.screen, self.level, self.lives, self.score, self.total_enemies - self.enemies_destroyed)
 
         # Game Over Overlay
         if self.game_over:
@@ -243,9 +283,27 @@ class Game:
             # Pulsing effect
             pulse = math.sin(self.game_over_timer * 5) * 10
             text = font.render("YOU LOSE", True, (255, 50, 50))
-            text_rect = text.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + pulse))
-            
+            text_rect = text.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 40 + pulse))
             overlay.blit(text, text_rect)
+            
+            # Buttons
+            mx, my = pygame.mouse.get_pos()
+            btn_font = pygame.font.SysFont('Arial', 24, bold=True)
+            
+            # Play Again
+            btn1_rect = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 50)
+            color1 = (40, 180, 100) if btn1_rect.collidepoint(mx, my) else (30, 140, 80)
+            pygame.draw.rect(overlay, color1, btn1_rect, border_radius=8)
+            t1 = btn_font.render("PLAY AGAIN", True, (255, 255, 255))
+            overlay.blit(t1, t1.get_rect(center=btn1_rect.center))
+            
+            # Quit
+            btn2_rect = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 120, 200, 50)
+            color2 = (220, 60, 60) if btn2_rect.collidepoint(mx, my) else (180, 50, 50)
+            pygame.draw.rect(overlay, color2, btn2_rect, border_radius=8)
+            t2 = btn_font.render("QUIT", True, (255, 255, 255))
+            overlay.blit(t2, t2.get_rect(center=btn2_rect.center))
+            
             self.screen.blit(overlay, (0, 0))
 
         # Level Transition Overlay
