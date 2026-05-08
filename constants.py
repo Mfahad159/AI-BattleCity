@@ -119,23 +119,54 @@ CSP_FAIRNESS_DISTANCE  = 10     # No spawn within 10 tiles of player start
 LVL1_FAST_TANK_UNLOCK_KILLS = 10   # Fast tanks spawn only after 10 kills
 LVL1_EAGLE_BRICK_LAYERS     = 2    # Eagle must have 2 brick layers at start
 
-# ── COLORS (Pygame RGB) ───────────────────────────────────────────────────────
-BLACK       = (0,   0,   0)
-WHITE       = (255, 255, 255)
-YELLOW      = (255, 220, 0)
-RED         = (220, 50,  50)
-GRAY        = (150, 150, 150)
-DARK_GRAY   = (50,  50,  50)
-GREEN       = (34,  139, 34)
-BLUE        = (30,  30,  200)
-ORANGE      = (255, 140, 0)
-BROWN       = (139, 90,  43)
+# ── COLORS & AESTHETICS (from design.md) ───────────────────────────────────────
+# Primary Surface Colors
+BG_PRIMARY        = (8,   10,  22)     # Main game canvas (deep navy)
+BG_SECONDARY      = (14,  17,  35)     # HUD / sidebar background
+BG_SURFACE        = (20,  24,  46)     # Card surfaces, menus
+BG_ELEVATED       = (28,  33,  60)     # Hover states, active cells
 
+# Grid overlay (RGBA — very subtle)
+GRID_LINE_COLOR   = (255, 255, 255, 12)
+
+# Neon Accents
+CYAN              = (0,   240, 255)    # Player, UI highlights
+CYAN_DIM          = (0,   150, 160)
+AMBER             = (255, 185, 0)      # Enemy tanks, warnings
+AMBER_DIM         = (160, 110, 0)
+RED_HOT           = (255, 55,  55)     # Boss, destruction, game over
+RED_DIM           = (140, 25,  25)
+MINT              = (0,   255, 160)    # Power-ups, success
+MINT_DIM          = (0,   140, 85)
+PURPLE            = (180, 80,  255)    # Boss phase accent
+PURPLE_DIM        = (90,  35,  130)
+
+# Terrain Colors
 TERRAIN_COLORS = {
-    EMPTY:  BLACK,
-    BRICK:  BROWN,
-    STEEL:  GRAY,
-    WATER:  BLUE,
-    FOREST: GREEN,
-    EAGLE:  YELLOW,
+    EMPTY:  BG_PRIMARY,
+    BRICK:  (160, 82,  45),     # Warm terracotta
+    STEEL:  (110, 120, 135),    # Metallic gray
+    WATER:  (20,  60,  120),    # Deep ocean blue
+    FOREST: (30,  75,  40),     # Dark woodland green
+    EAGLE:  AMBER,              # Glowing amber
 }
+
+# UI Text Colors
+TEXT_PRIMARY      = (230, 235, 255)    # Off-white blue tint
+TEXT_SECONDARY    = (120, 130, 165)    # Muted
+TEXT_ACCENT       = CYAN
+TEXT_DANGER       = RED_HOT
+TEXT_SUCCESS      = MINT
+TEXT_DISABLED     = (55,  60,  85)
+
+# Effects
+BRICK_HIT_FLASH   = (255, 140, 60)
+BRICK_CRUMBLE     = (100, 50,  20)
+
+# ── TYPOGRAPHY ────────────────────────────────────────────────────────────────
+FONT_SIZE_TITLE   = 36
+FONT_SIZE_HEADING = 22
+FONT_SIZE_BODY    = 16
+FONT_SIZE_SMALL   = 12
+FONT_SIZE_TINY    = 10
+FONT_FAMILY       = ["Courier New", "Consolas", "monospace"]

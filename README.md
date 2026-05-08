@@ -92,6 +92,20 @@ Collision Detection → State Update → Spawn Check → Render → Win/Lose Che
 
 ---
 
+---
+
+## 📈 Development Progress
+
+- [x] **Phase 1: Foundation & Project Structure** (Completed)
+- [ ] **Phase 2: Movement, Shooting & Player Control**
+- [ ] **Phase 3: Module A - CSP Map Generator**
+- [ ] **Phase 4: Module B - Search Algorithms & Enemy Agents**
+- [ ] **Phase 5: Module C - Adversarial Search (Boss Level)**
+- [ ] **Phase 6: Visual Polish, Effects & UI**
+- [ ] **Phase 7: Documentation & Final Delivery**
+
+---
+
 ## 📊 Performance Analysis
 
 The project includes a report analyzing the efficiency of the search algorithms, including a comparison of nodes evaluated **with and without Alpha-Beta pruning** in the Boss level.
