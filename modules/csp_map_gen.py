@@ -14,29 +14,32 @@ class CSPMapGenerator:
         """
         Main entry point for map generation.
         """
-        # 1. Fixed Positions
-        self.grid = [[EMPTY for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
-        ex, ey = EAGLE_POS
-        self.grid[ey][ex] = EAGLE
+        max_retries = 100
+        for _ in range(max_retries):
+            # 1. Clear grid
+            self.grid = [[EMPTY for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+            ex, ey = EAGLE_POS
+            self.grid[ey][ex] = EAGLE
+            
+            # 2. Base Safety Constraint
+            self._apply_base_safety()
+            
+            # 3. Fill terrain with constraints
+            self._fill_terrain(level)
+            
+            # 4. Final Validation: Reachability
+            if self._check_reachability():
+                return self.grid
         
-        # 2. Base Safety Constraint
-        self._apply_base_safety()
-        
-        # 3. Fill terrain with constraints
-        self._fill_terrain(level)
-        
-        # 4. Final Validation: Reachability
-        if self._check_reachability():
-            return self.grid
-        else:
-            # If failed, try again (simple retry logic for CSP)
-            return self.generate(level)
+        # Fallback to a very simple map if CSP fails too many times
+        return self._generate_fallback_map()
 
     def _apply_base_safety(self):
         ex, ey = EAGLE_POS
-        # One ring of walls (Brick by default)
+        # 1 ring of walls but leave TOP open for reachability
         for dx in range(-1, 2):
             for dy in range(-1, 2):
+                if dx == 0 and dy == -1: continue # Leave TOP open
                 nx, ny = ex + dx, ey + dy
                 if 0 <= nx < GRID_SIZE and 0 <= ny < GRID_SIZE:
                     if self.grid[ny][nx] == EMPTY:
@@ -92,3 +95,11 @@ class CSPMapGenerator:
             if path is None:
                 return False
         return True
+
+    def _generate_fallback_map(self):
+        # Very simple map: Eagle + safety wall, everything else empty
+        self.grid = [[EMPTY for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+        ex, ey = EAGLE_POS
+        self.grid[ey][ex] = EAGLE
+        self._apply_base_safety()
+        return self.grid
