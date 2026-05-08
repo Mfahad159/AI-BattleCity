@@ -9,7 +9,7 @@ class HUD:
         self.font_heading = pygame.font.SysFont("Courier New", FONT_SIZE_HEADING, bold=True)
         self.font_body = pygame.font.SysFont("Courier New", FONT_SIZE_BODY)
 
-    def render(self, surface, level, lives, score, enemies_remaining):
+    def render(self, surface, level, lives, score, enemies_remaining, debug_enabled):
         # Calculate hud_x to be exactly after the grid area
         grid_w = GRID_SIZE * TILE_SIZE
         hud_x = grid_w + 20
@@ -58,12 +58,11 @@ class HUD:
         rows = [
             ("MOVE", "WASD / ARROWS"),
             ("SHOOT", "SPACE"),
-            ("DEBUG", "F1"),
             ("ESC", "QUIT")
         ]
         
         # Table Grid
-        pygame.draw.rect(surface, (100, 100, 100), (hud_x, table_y, hud_w, 130), width=1)
+        pygame.draw.rect(surface, (100, 100, 100), (hud_x, table_y, hud_w, 100), width=1)
         font_keys = pygame.font.SysFont("Verdana", 13, bold=True)
         for i, (action, key) in enumerate(rows):
             row_y = table_y + i * 32
@@ -75,8 +74,25 @@ class HUD:
             surface.blit(a_surf, (hud_x + 5, row_y + 5))
             surface.blit(k_surf, (hud_x + 75, row_y + 7))
 
-        # 4. FOOTER
-        footer_y = table_y + 140
+        # 4. 3D AI DEBUG BUTTON
+        btn_y = WINDOW_HEIGHT - 120
+        btn_rect = pygame.Rect(hud_x, btn_y, hud_w, 40)
+        mx, my = pygame.mouse.get_pos()
+        is_hover = btn_rect.collidepoint(mx, my)
+        
+        # 3D Shading
+        base_color = (0, 180, 200) if is_hover else (0, 140, 160)
+        pygame.draw.rect(surface, (0, 80, 100), (hud_x, btn_y + 4, hud_w, 40), border_radius=5) # Shadow
+        pygame.draw.rect(surface, base_color, (hud_x, btn_y, hud_w, 40), border_radius=5) # Surface
+        pygame.draw.rect(surface, (100, 240, 255), (hud_x, btn_y, hud_w, 40), width=2, border_radius=5) # Highlight
+        
+        status = "ON" if debug_enabled else "OFF"
+        font_btn = pygame.font.SysFont("Impact", 18)
+        b_surf = font_btn.render(f"AI DEBUGGER: {status}", True, (255, 255, 255))
+        surface.blit(b_surf, b_surf.get_rect(center=btn_rect.center))
+
+        # 5. FOOTER
+        footer_y = btn_y + 50
         footer_text = [
             "If game is slow,",
             "disable AI Debug (F1)",

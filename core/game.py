@@ -65,19 +65,38 @@ class Game:
         self.window_controls.handle_event(event)
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                self.running = False
-            if event.key == pygame.K_F1:
-                self.overlay.toggle()
-        
-        if self.game_over and event.type == pygame.MOUSEBUTTONDOWN:
-            mx, my = pygame.mouse.get_pos()
-            # Rects for buttons
-            if pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 50).collidepoint(mx, my):
-                self.reset()
-            elif pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 120, 200, 50).collidepoint(mx, my):
                 import sys
                 pygame.quit()
                 sys.exit()
+
+        # Handle UI Clicks
+        mx, my = pygame.mouse.get_pos()
+        grid_w = GRID_SIZE * TILE_SIZE
+        debug_btn_rect = pygame.Rect(grid_w + 20, WINDOW_HEIGHT - 120, 210, 40)
+        
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if debug_btn_rect.collidepoint(mx, my):
+                self.overlay.toggle()
+                sounds.play('shoot')
+                
+            if self.game_over:
+                if pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 50).collidepoint(mx, my):
+                    self.reset()
+                elif pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 120, 200, 50).collidepoint(mx, my):
+                    import sys
+                    pygame.quit()
+                    sys.exit()
+
+        # Update Cursor Icon (Responsive)
+        on_button = debug_btn_rect.collidepoint(mx, my)
+        if self.game_over:
+            on_button = on_button or pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 50).collidepoint(mx, my)
+            on_button = on_button or pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 120, 200, 50).collidepoint(mx, my)
+            
+        if on_button:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        else:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
     def reset(self):
         # Full game reset
@@ -272,7 +291,7 @@ class Game:
         pygame.draw.rect(self.screen, BG_SECONDARY, sidebar_rect)
         
         # Render HUD elements
-        self.hud.render(self.screen, self.level, self.lives, self.score, self.total_enemies - self.enemies_destroyed)
+        self.hud.render(self.screen, self.level, self.lives, self.score, self.total_enemies - self.enemies_destroyed, self.overlay.enabled)
 
         # Game Over Overlay
         if self.game_over:
