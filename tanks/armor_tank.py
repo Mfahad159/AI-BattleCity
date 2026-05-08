@@ -69,8 +69,8 @@ class ArmorTank(BaseTank):
         # Real implementation would be more complex
         return [] # Placeholder
 
-    def render(self, surface):
+    def render(self, surface, color=None):
         # Color changes based on hit_count as per design.md
         colors = [(180, 180, 200), (160, 100, 80), (200, 60, 60), (255, 55, 55)]
         current_color = colors[min(self.hit_count, 3)]
-        super().render(surface, current_color)
+        super().render(surface, color or current_color)

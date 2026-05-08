@@ -60,5 +60,5 @@ class BasicTank(BaseTank):
             return True
         return False
 
-    def render(self, surface):
-        super().render(surface, self.color)
+    def render(self, surface, color=None):
+        super().render(surface, color or self.color)

@@ -52,7 +52,7 @@ class Game:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.running = False
-            if event.key == pygame.K_f1:
+            if event.key == pygame.K_F1:
                 self.overlay.toggle()
 
     def update(self):
@@ -83,10 +83,10 @@ class Game:
             
             # Create trail
             if random.random() < 0.3:
-                self.effects.create_trail(bullet.x * TILE_SIZE + TILE_SIZE//2, bullet.y * TILE_SIZE + TILE_SIZE//2, bullet.color)
+                self.effects.create_trail(bullet.grid_x * TILE_SIZE + TILE_SIZE//2, bullet.grid_y * TILE_SIZE + TILE_SIZE//2, bullet.color)
 
             if not bullet.active:
-                self.effects.create_explosion(bullet.x * TILE_SIZE + TILE_SIZE//2, bullet.y * TILE_SIZE + TILE_SIZE//2, bullet.color, count=5)
+                self.effects.create_explosion(bullet.grid_x * TILE_SIZE + TILE_SIZE//2, bullet.grid_y * TILE_SIZE + TILE_SIZE//2, bullet.color, count=5)
 
             if bullet.grid_x == 12 and bullet.grid_y == 24: # Eagle Pos
                 self.effects.create_explosion(12*TILE_SIZE + 12, 24*TILE_SIZE + 12, AMBER, count=50)

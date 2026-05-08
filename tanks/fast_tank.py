@@ -30,6 +30,6 @@ class FastTank(BaseTank):
             
         return "wait"
 
-    def render(self, surface):
-        super().render(surface, self.color)
+    def render(self, surface, color=None):
+        super().render(surface, color or self.color)
         # TODO: Add motion trail as per design.md

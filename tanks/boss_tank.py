@@ -50,7 +50,7 @@ class BossTank(BaseTank):
             
         return "wait"
 
-    def render(self, surface):
+    def render(self, surface, color=None):
         # Boss is larger as per design.md
         px, py = self.render_x, self.render_y
         sprite = assets.get_sprite(self.tank_type, self.direction)

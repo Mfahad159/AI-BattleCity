@@ -94,17 +94,41 @@ Collision Detection → State Update → Spawn Check → Render → Win/Lose Che
 
 ---
 
-## 📈 Development Progress
+## 🤖 AI Modules & Agents
+Detailed implementation of academic AI algorithms:
 
-- [x] **Phase 1: Foundation & Project Structure** (Completed)
-- [x] **Phase 2: Movement, Shooting & Player Control** (Completed)
-- [x] **Phase 3: Module A - CSP Map Generator** (Completed)
-- [x] **Phase 4: Module B - Search Algorithms & Enemy Agents** (Completed)
-- [x] **Phase 5: Module C - Adversarial Search (Boss Level)** (Completed)
-- [x] **Phase 6: Visual Polish, Effects & UI** (Completed)
-- [ ] **Phase 7: Documentation & Final Delivery**
+### 1. CSP Map Generator (`modules/csp_map_gen.py`)
+- Uses **Backtracking Search** with forward checking.
+- Ensures all maps are traversable (Reachability Constraint) using BFS.
+- Adheres to Base Safety, Fairness, and Density constraints.
+
+### 2. Search Algorithms (`ai/`)
+- **BFS (Basic Tank)**: Simple reflex agent finding the shortest path to the Eagle.
+- **Greedy Best-First (Fast Tank)**: High-speed agent that ignores the player to rush the base.
+- **A* (Armor Tank)**: Strategic agent that considers terrain costs (destructible vs empty) and retreats when damaged.
+
+### 3. Adversarial Search (Boss Tank)
+- Uses **Minimax with Alpha-Beta Pruning**.
+- Evaluates positions based on HP, distance to player, and Line-of-Sight.
+- Phase-based behavior (Defensive -> Aggressive -> Berserk).
+
+## 🎨 Visuals & UX
+- **Smooth Movement**: Interpolated (lerp) continuous movement instead of discrete grid snaps.
+- **Particle System**: Realistic explosions and bullet trails.
+- **Custom Window**: Borderless neo-retro frame with integrated controls.
+- **AI Visualizer**: Press **F1** to toggle real-time path and state visualization.
+
+## 🚀 Getting Started
+1. Install dependencies: `pip install pygame`
+2. Run the game: `python main.py`
+3. Controls:
+   - **WASD / Arrows**: Move Tank
+   - **Space**: Fire Bullet
+   - **F1**: Toggle AI Debug Overlay
+   - **Esc**: Exit Game
 
 ---
+*Created for AI Semester Project - Academic NU*
 
 ## 📊 Performance Analysis
 
