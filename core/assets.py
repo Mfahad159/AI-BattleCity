@@ -28,41 +28,58 @@ class AssetManager:
         return 0
 
     def _generate_all(self):
-        self.sprites['player'] = self._create_tank_sprite(CYAN)
-        self.sprites['basic'] = self._create_tank_sprite(AMBER)
-        self.sprites['fast'] = self._create_tank_sprite(MINT, sleek=True)
-        self.sprites['armor'] = self._create_tank_sprite((180, 180, 200), heavy=True)
-        self.sprites['boss'] = self._create_tank_sprite(PURPLE, boss=True)
+        # Create base tank sprites
+        self.sprites['player'] = self._create_stacked_tank(CYAN)
+        self.sprites['basic'] = self._create_stacked_tank(AMBER)
+        self.sprites['fast'] = self._create_stacked_tank(MINT, sleek=True)
+        self.sprites['armor'] = self._create_stacked_tank((180, 180, 200), heavy=True)
+        self.sprites['boss'] = self._create_stacked_tank(PURPLE, boss=True)
         self.sprites['eagle'] = self._create_eagle_sprite()
+        
+        # Create 3D wall sprites
+        self.sprites['brick_3d'] = self._create_stacked_wall(BRICK, depth=4)
+        self.sprites['steel_3d'] = self._create_stacked_wall(STEEL, depth=6)
 
-    def _create_tank_sprite(self, color, sleek=False, heavy=False, boss=False):
-        size = 24 if not boss else 28
-        surface = pygame.Surface((size, size), pygame.SRCALPHA)
+    def _create_stacked_tank(self, color, sleek=False, heavy=False, boss=False):
+        size = 32 if boss else 28
+        surface = pygame.Surface((size, size + 10), pygame.SRCALPHA)
         
-        # Draw tracks
-        track_w = 4 if not heavy else 6
-        pygame.draw.rect(surface, (40, 40, 40), (2, 4, track_w, size-8))
-        pygame.draw.rect(surface, (40, 40, 40), (size-2-track_w, 4, track_w, size-8))
-        
-        # Draw body
-        body_w = 14 if not sleek else 10
-        body_h = 16
-        body_rect = pygame.Rect(0, 0, body_w, body_h)
-        body_rect.center = (size//2, size//2)
-        pygame.draw.rect(surface, color, body_rect)
-        
-        # Draw turret
-        turret_rect = pygame.Rect(size//2 - 4, size//2 - 4, 8, 8)
-        pygame.draw.rect(surface, color, turret_rect)
-        pygame.draw.rect(surface, (255, 255, 255, 100), turret_rect, 1) # Highlight
-        
-        # Draw barrel
-        if boss:
-            pygame.draw.rect(surface, color, (size//2 - 5, size//2 - 12, 3, 10))
-            pygame.draw.rect(surface, color, (size//2 + 2, size//2 - 12, 3, 10))
-        else:
-            pygame.draw.rect(surface, color, (size//2 - 2, size//2 - 12, 4, 10))
+        # Layers (Bottom to Top)
+        layers = 4 if not heavy else 6
+        for i in range(layers):
+            layer_color = [max(0, c - (layers-i)*10) for c in color] # Darker bottom
+            y_off = layers - i
             
+            # Tracks
+            track_w = 4 if not heavy else 6
+            pygame.draw.rect(surface, (20, 20, 20), (2, 4 + y_off, track_w, size-8))
+            pygame.draw.rect(surface, (20, 20, 20), (size-2-track_w, 4 + y_off, track_w, size-8))
+            
+            # Body
+            body_w = 14 if not sleek else 10
+            pygame.draw.rect(surface, layer_color, (size//2 - body_w//2, size//2 - 8 + y_off, body_w, 16))
+            
+            # Turret (Top layers only)
+            if i > layers // 2:
+                pygame.draw.rect(surface, layer_color, (size//2 - 4, size//2 - 4 + y_off, 8, 8))
+                # Barrel
+                if boss:
+                    pygame.draw.rect(surface, layer_color, (size//2 - 5, size//2 - 12 + y_off, 3, 10))
+                    pygame.draw.rect(surface, layer_color, (size//2 + 2, size//2 - 12 + y_off, 3, 10))
+                else:
+                    pygame.draw.rect(surface, layer_color, (size//2 - 2, size//2 - 12 + y_off, 4, 10))
+                
+        return surface
+
+    def _create_stacked_wall(self, color, depth=5):
+        surface = pygame.Surface((24, 24 + depth), pygame.SRCALPHA)
+        # Side walls (Darker)
+        side_color = [max(0, c - 40) for c in color]
+        pygame.draw.rect(surface, side_color, (0, 0, 24, 24 + depth))
+        # Top face
+        pygame.draw.rect(surface, color, (0, 0, 24, 24))
+        # Bevel / Highlight
+        pygame.draw.rect(surface, (255, 255, 255, 50), (0, 0, 24, 24), 1)
         return surface
 
     def _create_eagle_sprite(self):

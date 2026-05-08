@@ -81,5 +81,6 @@ class BaseTank:
             
         sprite = assets.get_sprite(self.tank_type, self.direction)
         if sprite:
-            rect = sprite.get_rect(center=(self.render_x, self.render_y))
+            depth = sprite.get_height() - 24 # Standard height
+            rect = sprite.get_rect(center=(self.render_x, self.render_y - depth // 2))
             surface.blit(sprite, rect)

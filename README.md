@@ -113,10 +113,15 @@ Detailed implementation of academic AI algorithms:
 - Phase-based behavior (Defensive -> Aggressive -> Berserk).
 
 ## 🎨 Visuals & UX
+- **3D Surface Stacking**: Tanks and walls now have visual "depth" using a multi-layer stacking technique, giving the game a 2.5D/isometric feel.
 - **Smooth Movement**: Interpolated (lerp) continuous movement instead of discrete grid snaps.
 - **Particle System**: Realistic explosions and bullet trails.
 - **Custom Window**: Borderless neo-retro frame with integrated controls.
 - **AI Visualizer**: Press **F1** to toggle real-time path and state visualization.
+
+## 🔊 Audio Engine
+- **Procedural Sound Synthesis**: All sound effects (Shooting, Explosions, Movement) are generated in real-time using NumPy wave synthesis—no external audio files required.
+- **Dynamic Feedback**: Real-time audio cues for tank movement and combat actions.
 
 ## 🚀 Getting Started
 1. Install dependencies: `pip install pygame`

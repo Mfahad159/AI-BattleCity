@@ -15,6 +15,8 @@ from core.spawner import Spawner
 from ui.effects import EffectManager
 from ui.ai_overlay import AIOverlay
 
+from core.sounds import sounds
+
 class Game:
     def __init__(self, screen):
         self.screen = screen
@@ -62,15 +64,20 @@ class Game:
         # 1. INPUT
         keys = pygame.key.get_pressed()
         moved, shot = self.player.handle_input(keys, self.grid)
+        if moved:
+            sounds.play('move')
+        if shot:
+            sounds.play('shoot')
         
         # 2. AGENT DECISIONS (Enemies)
         for enemy in self.enemies:
             action = enemy.decide(self.grid, self.player)
             if action == "shoot":
+                sounds.play('shoot')
                 new_bullet = Bullet(enemy.x, enemy.y, enemy.direction, 'enemy', enemy.color)
                 self.bullets.append(new_bullet)
 
-        # 3. MOVE & 4. SHOOT (Already handled in decisions and handle_input)
+        # 3. MOVE & 4. SHOOT
         self.player.update_cooldowns()
         if shot:
             new_bullet = Bullet(self.player.x, self.player.y, self.player.direction, 'player', CYAN)
@@ -86,6 +93,7 @@ class Game:
                 self.effects.create_trail(bullet.grid_x * TILE_SIZE + TILE_SIZE//2, bullet.grid_y * TILE_SIZE + TILE_SIZE//2, bullet.color)
 
             if not bullet.active:
+                sounds.play('explosion')
                 self.effects.create_explosion(bullet.grid_x * TILE_SIZE + TILE_SIZE//2, bullet.grid_y * TILE_SIZE + TILE_SIZE//2, bullet.color, count=5)
 
             if bullet.grid_x == 12 and bullet.grid_y == 24: # Eagle Pos

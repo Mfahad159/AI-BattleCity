@@ -45,11 +45,20 @@ class Grid:
                 rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
                 
                 if tile_type != EMPTY:
+                    from core.assets import assets
                     if tile_type == EAGLE:
-                        from core.assets import assets
                         sprite = assets.get_sprite('eagle')
-                        if sprite:
-                            surface.blit(sprite, rect)
+                    elif tile_type == BRICK:
+                        sprite = assets.get_sprite('brick_3d')
+                    elif tile_type == STEEL:
+                        sprite = assets.get_sprite('steel_3d')
+                    else:
+                        sprite = None
+
+                    if sprite:
+                        # 3D walls are taller, so we need to shift them UP by the depth difference
+                        depth = sprite.get_height() - TILE_SIZE
+                        surface.blit(sprite, (rect.x, rect.y - depth))
                         continue
                         
                     pygame.draw.rect(surface, color, rect)
