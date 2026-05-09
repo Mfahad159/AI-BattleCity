@@ -1,6 +1,6 @@
 # AlphaBeta-Armor: Battle City AI Engine
 
-An AI-intensive recreation of the classic **Battle City (Tank 1990)** developed in Python. This project serves as a comprehensive implementation of core AI concepts, ranging from Constraint Satisfaction Problems (CSP) for map generation to Adversarial Search for strategic boss battles.
+The AI-intensive recreation of the classic **Battle City (Tank 1990)** developed in Python. This project serves as a comprehensive implementation of core AI concepts, ranging from Constraint Satisfaction Problems (CSP) for map generation to Adversarial Search for strategic boss battles.
 
 ---
 
