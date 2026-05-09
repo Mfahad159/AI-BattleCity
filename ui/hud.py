@@ -81,10 +81,10 @@ class HUD:
         is_hover = btn_rect.collidepoint(mx, my)
         
         # 3D Shading
-        base_color = (0, 180, 200) if is_hover else (0, 140, 160)
-        pygame.draw.rect(surface, (0, 80, 100), (hud_x, btn_y + 4, hud_w, 40), border_radius=5) # Shadow
+        base_color = (60, 140, 240) if is_hover else (40, 110, 200)
+        pygame.draw.rect(surface, (20, 60, 120), (hud_x, btn_y + 4, hud_w, 40), border_radius=5) # Shadow
         pygame.draw.rect(surface, base_color, (hud_x, btn_y, hud_w, 40), border_radius=5) # Surface
-        pygame.draw.rect(surface, (100, 240, 255), (hud_x, btn_y, hud_w, 40), width=2, border_radius=5) # Highlight
+        pygame.draw.rect(surface, (100, 180, 255), (hud_x, btn_y, hud_w, 40), width=2, border_radius=5) # Highlight
         
         status = "ON" if debug_enabled else "OFF"
         font_btn = pygame.font.SysFont("Impact", 18)

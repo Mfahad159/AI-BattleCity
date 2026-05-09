@@ -123,25 +123,25 @@ LVL1_EAGLE_BRICK_LAYERS     = 2    # Eagle must have 2 brick layers at start
 
 # ── COLORS & AESTHETICS (from design.md) ───────────────────────────────────────
 # Primary Surface Colors
-BG_PRIMARY        = (8,   10,  22)     # Main game canvas (deep navy)
-BG_SECONDARY      = (14,  17,  35)     # HUD / sidebar background
-BG_SURFACE        = (20,  24,  46)     # Card surfaces, menus
-BG_ELEVATED       = (28,  33,  60)     # Hover states, active cells
+BG_PRIMARY        = (10,  10,  15)     # Main game canvas (deep obsidian)
+BG_SECONDARY      = (18,  18,  26)     # HUD / sidebar background (charcoal)
+BG_SURFACE        = (24,  24,  32)     # Card surfaces, menus
+BG_ELEVATED       = (32,  32,  45)     # Hover states, active cells
 
 # Grid overlay (RGBA — very subtle)
-GRID_LINE_COLOR   = (255, 255, 255, 12)
+GRID_LINE_COLOR   = (255, 255, 255, 10)
 
-# Neon Accents
-CYAN              = (0,   240, 255)    # Player, UI highlights
-CYAN_DIM          = (0,   150, 160)
-AMBER             = (255, 185, 0)      # Enemy tanks, warnings
-AMBER_DIM         = (160, 110, 0)
-RED_HOT           = (255, 55,  55)     # Boss, destruction, game over
-RED_DIM           = (140, 25,  25)
-MINT              = (0,   255, 160)    # Power-ups, success
-MINT_DIM          = (0,   140, 85)
-PURPLE            = (180, 80,  255)    # Boss phase accent
-PURPLE_DIM        = (90,  35,  130)
+# Accent & Comfort Colors (Deep Cobalt & Muted Neons)
+CYAN              = (40,  120, 220)    # Player, UI highlights (Deep Cobalt)
+CYAN_DIM          = (30,  80,  160)
+AMBER             = (210, 160, 0)      # Enemy tanks, warnings
+AMBER_DIM         = (140, 100, 0)
+RED_HOT           = (200, 50,  50)     # Boss, destruction, game over
+RED_DIM           = (120, 20,  20)
+MINT              = (0,   180, 120)    # Power-ups, success
+MINT_DIM          = (0,   120, 80)
+PURPLE            = (150, 60,  220)    # Boss phase accent
+PURPLE_DIM        = (80,  30,  120)
 
 # Terrain Colors
 TERRAIN_COLORS = {
@@ -154,12 +154,12 @@ TERRAIN_COLORS = {
 }
 
 # UI Text Colors
-TEXT_PRIMARY      = (230, 235, 255)    # Off-white blue tint
-TEXT_SECONDARY    = (120, 130, 165)    # Muted
+TEXT_PRIMARY      = (210, 215, 230)    # Softened off-white
+TEXT_SECONDARY    = (100, 110, 140)    # Muted
 TEXT_ACCENT       = CYAN
 TEXT_DANGER       = RED_HOT
 TEXT_SUCCESS      = MINT
-TEXT_DISABLED     = (55,  60,  85)
+TEXT_DISABLED     = (45,  50,  70)
 
 # Effects
 BRICK_HIT_FLASH   = (255, 140, 60)
